@@ -19,7 +19,10 @@ class MoviesController {
 
     }
 
-    createMovie = () => {
+    createMovie = async (req: Request, res: Response) => {
+        const newMovie = req.body;
+        const insertedActor = await movieDao.createMovie(newMovie);
+        res.json(insertedActor);
 
 
     }
