@@ -23,5 +23,31 @@ export default class User {
     private joined: Date = new Date();
     private location: Location | null = null;
 
+    constructor(userNameIn: string, firstNameIn: string, lastNameIn: string) {
+        this.username = userNameIn;
+        this.firstName = firstNameIn;
+        this.lastName = lastNameIn;
+    }
+
+    getUserName(): string {
+        return this.username;
+    }
+
+    getFirstName(): string {
+        let retVal = '';
+        if (this.firstName != null) {
+            retVal = this.firstName;
+        }
+        return retVal;
+    }
+
+    getLastName(): string {
+        let retVal = '';
+        if (this.lastName != null) {
+            retVal = this.lastName;
+        }
+        return retVal;
+    }
+
 }
 

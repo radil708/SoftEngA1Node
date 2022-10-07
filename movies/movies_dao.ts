@@ -3,20 +3,28 @@
 
 
 import moviesModel from "./movies_models";
-import movies_models from "./movies_models";
 
-// making functions specific to your domain. Internals ues higher level api
-const findAllMovies = () => {
-    return moviesModel.find();
-}
+export const findAllMovies = () =>
+    moviesModel.find();
 
-//mid is not the id auto genned by javascript
-export const findMovieById = (mid: string) => {
-    return moviesModel.findById(mid);
-}
+export const findMovieByTitle = (title: string) =>
+    moviesModel.findOne({title});
+//moviesModel.findOne({title: title});
 
-export const createMovie = (movie: any) => {
+export const findMoviesByDirector = (director: string) =>
+    moviesModel.find({director});
+
+export const findMovieById = (mid: string) =>
+    moviesModel.findById(mid);
+
+export const createMovie = (movie: any) =>
     moviesModel.create(movie);
-}
 
-const deleteMovie = (id: string) => {}
+export const deleteMovie = (mid: string) =>
+    moviesModel.deleteOne({_id: mid});
+
+export const updateMovie = (mid: string, newMovie: any) =>
+    moviesModel.updateOne(
+        {_id: mid},
+        {$set: newMovie}
+    );
