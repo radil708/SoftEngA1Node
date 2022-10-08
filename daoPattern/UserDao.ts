@@ -5,8 +5,10 @@ import userModel from "./UserModel";
 export default class UserDao implements UserDaoI {
     async createUser(user: User): Promise<User> {
         const userModelObj = await UserModel.create(user);
-        const newUser = new User(userModelObj.getUserName(),
-            userModelObj.getFirstName(), userModelObj.getLastName());
+        // useerModelObj is a dictionary
+        const newUser = new User(userModelObj['username'],
+        userModelObj['firstName'], userModelObj['lastName'],
+        userModelObj['password'], userModelObj['email']);
         return newUser;
     }
 

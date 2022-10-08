@@ -23,10 +23,13 @@ export default class User {
     private joined: Date = new Date();
     private location: Location | null = null;
 
-    constructor(userNameIn: string, firstNameIn: string, lastNameIn: string) {
+    constructor(userNameIn: string, firstNameIn: string, lastNameIn: string, passwordIn : string,
+                emailIn: string) {
         this.username = userNameIn;
         this.firstName = firstNameIn;
         this.lastName = lastNameIn;
+        this.password = passwordIn;
+        this.email = emailIn;
     }
 
     getUserName(): string {
@@ -39,6 +42,14 @@ export default class User {
             retVal = this.firstName;
         }
         return retVal;
+    }
+
+    getPassword(): string {
+        return this.password;
+    }
+
+    getEmail(): string {
+        return this.email;
     }
 
     getLastName(): string {

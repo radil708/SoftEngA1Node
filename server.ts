@@ -3,7 +3,9 @@
  */
 import express, {Request, Response} from 'express';
 import mongoose from "mongoose"; // needed to change this
-import MoviesController from "./movies/MoviesController"; // added during lect
+import MoviesController from "./movies/MoviesController";
+import UserController from "./daoPattern/UserController";
+import UserDao from "./daoPattern/UserDao"; // added during lect
 const cors = require('cors')
 const app = express();
 
@@ -19,6 +21,10 @@ function sayHello (req: Request, res: Response) {
 /* THis configures servers to respond to specific requests, done below */
 
 const movieController = new MoviesController(app);
+
+const userDaoInstance = new UserDao();
+
+const userController = new UserController(app,userDaoInstance);
 
 // app.get means listen for incoming get request with the following patterns
 // get method takes 2 ards, first is a string, second is a function (this is javascript)

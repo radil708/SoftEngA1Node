@@ -1,6 +1,7 @@
 import {Request, Response,Express} from "express";
 import UserDao from "./UserDao";
 import UserControllerI from "./UserControllerI";
+import * as movieDao from "../movies/movies_dao";
 
 export default class UserController implements UserControllerI {
     // attributes
@@ -19,19 +20,25 @@ export default class UserController implements UserControllerI {
 
     }
 
-    createUser(req: e.Request, res: e.Response): void {
+    createUser = async (req: Request, res: Response) => {
+        // assign variable to store PUT JSON body from client
+        const newUserJSON = req.body;
+        // user model to create a new user in database
+        const newUser = await this.userDao.createUser(newUserJSON);
+        // add new user JSON info to response?
+        res.json(newUser);
     }
 
-    deleteUser(req: e.Request, res: e.Response): void {
+    deleteUser(req: Request, res: Response): void {
     }
 
-    async findAllUsers(req: e.Request, res: e.Response): void {
+    findAllUsers(req: Request, res: Response): void {
     }
 
-    findUserById(req: e.Request, res: e.Response): void {
+    findUserById(req: Request, res: Response): void {
     }
 
-    updateUser(req: e.Request, res: e.Response): void {
+    updateUser(req: Request, res: Response): void {
     }
 
 }
