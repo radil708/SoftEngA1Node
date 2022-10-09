@@ -1,6 +1,7 @@
 import User from "../models/User";
-import UserModel from "./UserModel";import UserDaoI from "./UserDaoI";
-import userModel from "./UserModel";
+import UserModel from "../mongoose/UserModel";import UserDaoI from "./UserDaoI";
+import userModel from "../mongoose/UserModel";
+import {Schema, ObjectId} from "mongoose";
 
 export default class UserDao implements UserDaoI {
     async createUser(user: User): Promise<User> {
@@ -12,14 +13,19 @@ export default class UserDao implements UserDaoI {
         return newUser;
     }
 
-    async deleteUser(uid: string): Promise<any> {
-        return await UserModel.deleteOne({id: uid});
+    async deleteUser(uid: string): Promise<number> {
+        const modelsAfterDeletion = await UserModel.deleteOne({_id: uid});
+        return modelsAfterDeletion.deletedCount;
     }
     // declare that the function is asynchronous
     async findAllUsers(): Promise<User[]> {
         // find wihtout a user passed in will return all documents form user table
-
-        return await UserModel.find();
+        // gets an array of user models
+        const allUserJsons = await UserModel.find();
+        // for each user model in array allUserJsons
+        return allUserJsons.map(eachUserJSON => new User(eachUserJSON['username'],
+            eachUserJSON['firstName'], eachUserJSON['lastName'], eachUserJSON['password'],
+            eachUserJSON['email']));
     }
 
     // This method looks for a document based on id
@@ -29,10 +35,15 @@ export default class UserDao implements UserDaoI {
         return await UserModel.findById(uid);
     }
 
-    async updateUser(uid: string, user: User): Promise<any> {
+    async updateUser(uid: string, user: User): Promise<number> {
         //The $set operator replaces the value of a field with the specified value.
         // TODO ask, only updates certain fields or all?? what if only 1 attr change?
-        return await UserModel.updateOne({id: uid, $set: user});
+        const updatedUserArr =  await UserModel.updateOne(
+            {_id: uid},
+            {$set: user}
+        );
+        console.log(updatedUserArr);
+        // TODO ask why upserted count doesnt work
+        return updatedUserArr.matchedCount;
     }
-
 }

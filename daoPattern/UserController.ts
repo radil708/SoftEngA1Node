@@ -17,7 +17,6 @@ export default class UserController implements UserControllerI {
         this.app.post('/users', this.createUser);
         this.app.delete('/users/:userid', this.deleteUser);
         this.app.put('/users/:userid', this.updateUser);
-
     }
 
     createUser = async (req: Request, res: Response) => {
@@ -29,16 +28,79 @@ export default class UserController implements UserControllerI {
         res.json(newUser);
     }
 
-    deleteUser(req: Request, res: Response): void {
+    deleteUser = async (req: Request, res: Response) => {
+        //TODO ask, by default params has a
+        // userid comes from line18, i.e. the userid in the url
+        // this has nothing to do with request JSON
+        const userIdToDelete = req.params['userid'];
+
+        let count = 0;
+        //console.log(req.params);
+        try {
+            count = await this.userDao.deleteUser(userIdToDelete);
+        }
+        catch (BSONTypeError) {
+            let errorMessage = "BSONType Error, userid: " + userIdToDelete + " is INCORRECT format";
+            errorMessage += " \nFAILED to DELETE user";
+            res.status(400).send(errorMessage);
+            return;
+        }
+        if (count > 0) {
+            res.send("SUCCESFULLY DELETED " + count.toString() + " users");
+        }
+        else {
+            res.send("No users with _id: " + userIdToDelete + " found\n0 users deleted" )
+        }
+
     }
 
-    findAllUsers(req: Request, res: Response): void {
+    findAllUsers = async (req: Request, res: Response) => {
+        const allUsers = await this.userDao.findAllUsers();
+        // send response JSON
+        res.json(allUsers)
+
     }
 
-    findUserById(req: Request, res: Response): void {
+    findUserById = async (req: Request, res: Response) => {
+        // userid comes from url input
+        const userIdToFind = req.params['userid'];
+        try {
+            const targeted_user = await this.userDao.findUserById(userIdToFind);
+            res.json(targeted_user);
+        }
+        catch (BSONTypeError) {
+            let errorMessage = "BSONType Error, userid: " + userIdToFind + " is INCORRECT format";
+            errorMessage+= " \nFAILED to GET/FIND user"
+            res.status(404).send(errorMessage);
+        }
     }
 
-    updateUser(req: Request, res: Response): void {
+    updateUser = async (req: Request, res: Response) => {
+        const userByIdtoUpdate = req.params['userid'];
+        const updatedUserJSON = req.body;
+
+        let updatedUserCount = 0;
+        try {
+            updatedUserCount += await this.userDao.updateUser(userByIdtoUpdate, updatedUserJSON);
+        }
+        // if no user with userID exists send error message
+        catch (BSONTypeError) {
+            let errorMessage = "BSONType Error, userid: " + userByIdtoUpdate + " is INCORRECT format";
+            errorMessage += " \nFAILED to PUT/UPDATE user";
+            res.status(404).send(errorMessage);
+            return;
+        }
+        console.log(updatedUserCount);
+
+        if (updatedUserCount > 0) {
+            res.status(200);
+            res.send("Updated " + updatedUserCount.toString() + " user(s)");
+        }
+        else {
+            res.status(200);
+            const notificationMessage = "There are no users with the _id: " + userByIdtoUpdate +"\n0 users updated";
+            res.send(notificationMessage);
+        }
     }
 
 }
