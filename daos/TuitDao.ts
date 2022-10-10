@@ -4,8 +4,9 @@ import TuitModel from "../mongoose/TuitModel";
 import User from "../models/User";
 import tuitModel from "../mongoose/TuitModel";
 import {promises} from "dns";
+import TuitDaoI from "../interfaces/TuitDaoI";
 
-export default class TuitDao {
+export default class TuitDao implements TuitDaoI {
     oid = require('mongodb').ObjectId;
 
     async findAllTuits(): Promise<Tuit[]> {
@@ -27,10 +28,11 @@ export default class TuitDao {
         return await TuitModel.deleteOne({_id : tuitId});
     }
 
-    async updateTuit(tuitId: string, tuit : Tuit) : Promise<any> {
-        return TuitModel.updateOne(
+    async updateTuit(tuitId: string, tuit : Tuit) : Promise<number> {
+        const retTuit =  await TuitModel.updateOne(
             {_id: tuitId},
             {$set: {tuit: tuit['tuit']}});
+        return retTuit.matchedCount;
     }
 
     async findTuitById(id: string) : Promise<Tuit> {
