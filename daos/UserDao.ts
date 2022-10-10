@@ -1,7 +1,8 @@
 import User from "../models/User";
-import UserModel from "../mongoose/UserModel";import UserDaoI from "./UserDaoI";
+import UserModel from "../mongoose/UserModel";
+import UserDaoI from "../interfaces/UserDaoI";
 import userModel from "../mongoose/UserModel";
-import {Schema, ObjectId} from "mongoose";
+
 
 export default class UserDao implements UserDaoI {
     async createUser(user: User): Promise<User> {
@@ -35,6 +36,11 @@ export default class UserDao implements UserDaoI {
         return await UserModel.findById(uid);
     }
 
+    // get user by filterbyName
+    async findUserbyUserName(userNameIn: string): Promise<any> {
+        return await UserModel.find({username: userNameIn });
+    }
+
     async updateUser(uid: string, user: User): Promise<number> {
         //The $set operator replaces the value of a field with the specified value.
         // TODO ask, only updates certain fields or all?? what if only 1 attr change?
@@ -42,7 +48,7 @@ export default class UserDao implements UserDaoI {
             {_id: uid},
             {$set: user}
         );
-        console.log(updatedUserArr);
+        //console.log(updatedUserArr);
         // TODO ask why upserted count doesnt work
         return updatedUserArr.matchedCount;
     }

@@ -11,6 +11,7 @@ export default interface UserControllerI {
     findAllUsers(req: Request, res: Response): void;
     findUserById(req: Request, res: Response): void;
     // create user will return a new user as a response to let client know it succeded
+    findUserbyUserName(req: Request, res: Response): void;
     createUser(req: Request, res: Response): void;
     deleteUser(req: Request, res: Response): void;
     updateUser(req: Request, res: Response): void;

@@ -4,8 +4,10 @@
 import express, {Request, Response} from 'express';
 import mongoose from "mongoose"; // needed to change this
 import MoviesController from "./movies/MoviesController";
-import UserController from "./daoPattern/UserController";
-import UserDao from "./daoPattern/UserDao"; // added during lect
+import UserController from "./controllers/UserController";
+import UserDao from "./daos/UserDao";
+import TuitDao from "./daos/TuitDao";
+import TuitController from "./controllers/TuitController"; // added during lect
 const cors = require('cors')
 const app = express();
 
@@ -25,6 +27,10 @@ const movieController = new MoviesController(app);
 const userDaoInstance = new UserDao();
 
 const userController = new UserController(app,userDaoInstance);
+
+const tuitDaoInstance = new TuitDao();
+
+const tuitController = new TuitController(app, tuitDaoInstance, userDaoInstance);
 
 // app.get means listen for incoming get request with the following patterns
 // get method takes 2 ards, first is a string, second is a function (this is javascript)

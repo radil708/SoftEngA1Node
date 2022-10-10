@@ -6,6 +6,8 @@ import Location from "../models/Location";
 /*
 This is the schema for users. i.e. defines how a table/collection will
 look like. In otherwords what each document in a collection will have for key values.
+Name of the table the schema defines is the name of the collection in the
+database. In this case 'Users'
  */
 const UserSchema = new mongoose.Schema({
     username: {type: String, required: true},

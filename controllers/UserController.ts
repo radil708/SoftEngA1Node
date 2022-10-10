@@ -1,6 +1,6 @@
 import {Request, Response,Express} from "express";
-import UserDao from "./UserDao";
-import UserControllerI from "./UserControllerI";
+import UserDao from "../daos/UserDao";
+import UserControllerI from "../interfaces/UserControllerI";
 import * as movieDao from "../movies/movies_dao";
 
 export default class UserController implements UserControllerI {
@@ -73,6 +73,32 @@ export default class UserController implements UserControllerI {
             errorMessage+= " \nFAILED to GET/FIND user"
             res.status(404).send(errorMessage);
         }
+    }
+
+    findUserbyUserName = async (req: Request, res: Response) => {
+        let targetUserName = '';
+        const userNameTargetOne = req.body['postedBy']
+        const userNameTargetTwo = req.body['username']
+
+        if (userNameTargetOne.length == 0 || userNameTargetOne == null) {
+            if (userNameTargetTwo.length > 0) {
+                targetUserName = userNameTargetTwo;
+            }
+        }
+        else if (userNameTargetTwo.length == 0 || userNameTargetTwo == null) {
+            if (userNameTargetOne.length > 0) {
+                targetUserName = userNameTargetOne;
+            }
+        }
+        else {
+            let errorMessage = "JSON request body requires {username: value} or {postedBy: value}";
+            errorMessage += "\nusername NOT defined, UNABLE to search"
+            res.status(404).send(errorMessage)
+            return;
+        }
+
+        const targetedUser = await this.userDao.findUserbyUserName(targetUserName);
+        res.json(targetedUser);
     }
 
     updateUser = async (req: Request, res: Response) => {
