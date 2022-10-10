@@ -17,10 +17,13 @@ export default class TuitController implements TuitControllerI {
         this.userDao = userDaoIn;
 
         this.app.get('/tuits', this.findAllTuits);
+        this.app.get('/tuits/:tid', this.findTuitById)
+        this.app.get('/users/:uid/tuits', this.findTuitsByUser)
         this.app.post('/tuits',this.createTuit);
         this.app.delete('/tuits/:tid', this.deleteTuit)
         this.app.put('/tuits/:tid', this.updateTuit)
-        this.app.get('/users/:uid/tuits', this.findTuitsByUser)
+
+
     }
 
 
@@ -50,7 +53,9 @@ export default class TuitController implements TuitControllerI {
         res.json(allTuits);
     }
 
-    findTuitById(req: Request, res: Response): void {
+    findTuitById = async (req: Request, res: Response) => {
+        const tuitCurrent = await this.tuitDao.findTuitById(req.params.tid);
+        res.json(tuitCurrent);
 
     }
 
