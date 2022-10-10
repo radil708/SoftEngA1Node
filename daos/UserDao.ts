@@ -32,7 +32,7 @@ export default class UserDao implements UserDaoI {
     // This method looks for a document based on id
     // assigned by mongo. Uses findbyId method.
     async findUserById(uid: string): Promise<any> {
-        // TODO ask, shoudl param be {id: uid}
+        // TODO ask, shoudl param be {id: uid} //
         return await UserModel.findById(uid);
     }
 
