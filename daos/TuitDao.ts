@@ -42,17 +42,16 @@ export default class TuitDao {
     }
 
     async findTuitsByUser(userId: string): Promise<Tuit[]> {
-        //console.log(userId)
+        // TODO ask how to manage setting user if functinos are async
         const tMongoModel = await TuitModel
-            .find({postedBy: userId});
+            .find({postedBy: userId})
+            .populate('postedBy').exec();
+        // because asynchronous, mapping cannot set userID even though database has it
         const tModels = tMongoModel.map((tMongoModel) => {
-            let indivT = new Tuit(tMongoModel.tuit, tMongoModel.postedOn);
+            const indivT = new Tuit(tMongoModel.tuit, tMongoModel.postedOn);
             indivT.setUserId(userId);
-
             return indivT;
         });
-        return tModels;
-
+        return await tModels;
     }
-
 }
