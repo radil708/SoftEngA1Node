@@ -20,6 +20,7 @@ export default class TuitController implements TuitControllerI {
         this.app.post('/tuits',this.createTuit);
         this.app.delete('/tuits/:tid', this.deleteTuit)
         this.app.put('/tuits/:tid', this.updateTuit)
+        this.app.get('/users/:uid/tuits', this.findTuitsByUser)
     }
 
 
@@ -32,7 +33,7 @@ export default class TuitController implements TuitControllerI {
 
         const actualTuit = new Tuit(req.body.tuit, req.body.postedOn);
         actualTuit.setUserId(userId)
-        console.log(actualTuit)
+
         // TODO ask this doesn't set the author for when posting to databsae, how to fix?
         //await actualTuit.setAuthor(new User(userThatPostedTuit,'','','',''));
         const tuitData = await this.tuitDao.createTuit(actualTuit);
@@ -50,11 +51,18 @@ export default class TuitController implements TuitControllerI {
     }
 
     findTuitById(req: Request, res: Response): void {
+
     }
 
     updateTuit = (req: Request, res: Response) => {
         this.tuitDao.updateTuit(req.params.tid, req.body)
             .then(status => res.json(status));
+    }
+
+    findTuitsByUser = (req: Request, res: Response) => {
+        console.log(req.params.uid)
+        this.tuitDao.findTuitsByUser(req.params.uid)
+            .then(tuits => res.json(tuits));
     }
 
 }

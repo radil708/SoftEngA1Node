@@ -33,4 +33,8 @@ export default class Tuit {
     getUserID(): string {
         return this.userObjectId;
     }
+
+    setPostedBy(userIn : User) {
+        this.postedBy = userIn;
+    }
 }

@@ -38,6 +38,21 @@ export default class TuitDao {
         const tuit = new Tuit(tMongoModel.tuit ?? '',
             new Date(tMongoModel?.postedOn ?? (new Date())))
         return tuit
+
+    }
+
+    async findTuitsByUser(userId: string): Promise<Tuit[]> {
+        //console.log(userId)
+        const tMongoModel = await TuitModel
+            .find({postedBy: userId});
+        const tModels = tMongoModel.map((tMongoModel) => {
+            let indivT = new Tuit(tMongoModel.tuit, tMongoModel.postedOn);
+            indivT.setUserId(userId);
+
+            return indivT;
+        });
+        return tModels;
+
     }
 
 }
