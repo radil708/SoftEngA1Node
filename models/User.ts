@@ -22,9 +22,11 @@ export default class User {
     private dateOfBirth: Date | null = null;
     private joined: Date = new Date();
     private location: Location | null = null;
+    private userId: string = "";
 
-    constructor(userNameIn: string, firstNameIn: string, lastNameIn: string, passwordIn : string,
+    constructor(userIdIn: string, userNameIn: string, firstNameIn: string, lastNameIn: string, passwordIn : string,
                 emailIn: string) {
+        this.userId = userIdIn;
         this.username = userNameIn;
         this.firstName = firstNameIn;
         this.lastName = lastNameIn;

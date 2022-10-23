@@ -8,9 +8,12 @@ export default class UserDao implements UserDaoI {
     async createUser(user: User): Promise<User> {
         const userModelObj = await UserModel.create(user);
         // useerModelObj is a dictionary
-        const newUser = new User(userModelObj['username'],
-        userModelObj['firstName'], userModelObj['lastName'],
-        userModelObj['password'], userModelObj['email']);
+        const newUser = new User(
+            userModelObj._id.toString(),
+            userModelObj['username'],
+            userModelObj['firstName'], userModelObj['lastName'],
+            userModelObj['password'], userModelObj['email']);
+
         return newUser;
     }
 
@@ -24,21 +27,42 @@ export default class UserDao implements UserDaoI {
         // gets an array of user models
         const allUserJsons = await UserModel.find();
         // for each user model in array allUserJsons
-        return allUserJsons.map(eachUserJSON => new User(eachUserJSON['username'],
-            eachUserJSON['firstName'], eachUserJSON['lastName'], eachUserJSON['password'],
+        return allUserJsons.map(eachUserJSON => new User(
+            eachUserJSON._id.toString(),
+            eachUserJSON['username'],
+            eachUserJSON['firstName'],
+            eachUserJSON['lastName'],
+            eachUserJSON['password'],
             eachUserJSON['email']));
     }
 
-    // This method looks for a document based on id
-    // assigned by mongo. Uses findbyId method.
-    async findUserById(uid: string): Promise<any> {
-        // TODO ask, shoudl param be {id: uid} //
-        return await UserModel.findById(uid);
+    async findUserById(uid: string): Promise<User> {
+        const userFromDb = await UserModel.findById(uid);
+
+        // TODO maybe obscure password here?
+        return new User(
+            userFromDb._id.toString(),
+            userFromDb['username'],
+            userFromDb['firstName'],
+            userFromDb['lastName'],
+            userFromDb['password'],
+            userFromDb['email']
+        )
     }
 
     // get user by filterbyName
-    async findUserbyUserName(userNameIn: string): Promise<any> {
-        return await UserModel.find({username: userNameIn });
+    async findUserbyUserName(userNameIn: string): Promise<User> {
+        // TODO gotta use findOne need to implement no same username
+        const userFromDb = await UserModel.findOne({username: userNameIn });
+
+        return new User(
+            userFromDb._id.toString() || '',
+            userFromDb['username'] || '',
+            userFromDb['firstName'] || '',
+            userFromDb['lastName'] || '',
+            userFromDb['password'] || '',
+            userFromDb['email'] || ''
+        );
     }
 
     async updateUser(uid: string, user: User): Promise<number> {

@@ -12,7 +12,7 @@ export default class TuitDao implements TuitDaoI {
     async findAllTuits(): Promise<Tuit[]> {
         const allTuitsJSON = await TuitModel.find();
         return allTuitsJSON.map(eachTuit => new Tuit(eachTuit['tuit'],
-            eachTuit['postedOn']));
+            eachTuit['postedOn'], eachTuit._id.toString()));
     }
 
     async createTuit(tuitIn: Tuit): Promise<Tuit> {

@@ -20,12 +20,12 @@ export default class UserController implements UserControllerI {
     }
 
     createUser = async (req: Request, res: Response) => {
-        // assign variable to store PUT JSON body from client
+        // assign variable to store POST JSON body from client
         const newUserJSON = req.body;
         // user model to create a new user in database
-        const newUser = await this.userDao.createUser(newUserJSON);
+        const newUserObject = await this.userDao.createUser(newUserJSON);
         // add new user JSON info to response?
-        res.json(newUser);
+        res.send(newUserObject);
     }
 
     deleteUser = async (req: Request, res: Response) => {
