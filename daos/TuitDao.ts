@@ -5,23 +5,53 @@ import User from "../models/User";
 import tuitModel from "../mongoose/TuitModel";
 import {promises} from "dns";
 import TuitDaoI from "../interfaces/TuitDaoI";
+import userModel from "../mongoose/UserModel";
+import UserModel from "../mongoose/UserModel";
 
 export default class TuitDao implements TuitDaoI {
     oid = require('mongodb').ObjectId;
 
     async findAllTuits(): Promise<Tuit[]> {
         const allTuitsJSON = await TuitModel.find();
-        return allTuitsJSON.map(eachTuit => new Tuit(eachTuit['tuit'],
-            eachTuit['postedOn'], eachTuit._id.toString()));
+
+        const allTuitsArray = allTuitsJSON.map(eachTuit => new Tuit(
+            eachTuit._id.toString(),
+            eachTuit.postedBy._id.toString(),
+            eachTuit['tuit'],
+            eachTuit['postedOn']
+            )
+        );
+
+        //TODO ask should I add user attribute even if we already have user ID
+
+        return allTuitsArray;
     }
 
     async createTuit(tuitIn: Tuit): Promise<Tuit> {
-        const tuitMongooseModle = await TuitModel.create({tuit: tuitIn.post(),
-                postedOn: tuitIn.getDate(), postedBy: this.oid(tuitIn.getUserID())});
-        // assumption is that request will have userId
+        const userFromDb = await userModel.findById(tuitIn.getUserID());
 
-        return new Tuit(tuitMongooseModle?.tuit.toString() ?? '',
-            new Date(tuitMongooseModle?.postedOn ?? (new Date())));
+        const tuitJSON = await TuitModel.create({tuit: tuitIn.getContent(),
+                postedOn: tuitIn.getDate(), postedBy: userFromDb});
+
+        const tuitResponse = new Tuit(
+            tuitJSON._id.toString(),
+            userFromDb._id.toString(),
+            tuitJSON.tuit,
+            tuitJSON.postedOn
+        );
+
+        const userT = new User(
+            userFromDb._id.toString() || '',
+            userFromDb['username'] || '',
+            userFromDb['firstName'] || '',
+            userFromDb['lastName'] || '',
+            userFromDb['password'] || '',
+            userFromDb['email'] || ''
+        )
+
+        tuitResponse.setUser(userT);
+
+        return tuitResponse;
     }
 
     async deleteTuit(tuitId: string): Promise<any> {
@@ -31,29 +61,62 @@ export default class TuitDao implements TuitDaoI {
     async updateTuit(tuitId: string, tuit : Tuit) : Promise<number> {
         const retTuit =  await TuitModel.updateOne(
             {_id: tuitId},
-            {$set: {tuit: tuit['tuit']}});
+            {$set: tuit}
+    );
         return retTuit.matchedCount;
     }
 
     async findTuitById(id: string) : Promise<Tuit> {
-        const tMongoModel = await TuitModel.findById(id).populate('postedBy').exec();
-        const tuit = new Tuit(tMongoModel.tuit ?? '',
-            new Date(tMongoModel?.postedOn ?? (new Date())))
-        return tuit
+        const tuitFromDb = await TuitModel.findById(id);
+        const userFromDb = await userModel.findById(tuitFromDb.getUserID());
+
+        const userT = new User(
+            userFromDb._id.toString() || '',
+            userFromDb['username'] || '',
+            userFromDb['firstName'] || '',
+            userFromDb['lastName'] || '',
+            userFromDb['password'] || '',
+            userFromDb['email'] || '')
+
+        const tuitResponse = new Tuit(
+            tuitFromDb._id.toString(),
+            userFromDb._id.toString(),
+            tuitFromDb.tuit,
+            tuitFromDb.postedOn
+        );
+
+        tuitResponse.setUser(userT);
+
+        return tuitResponse
 
     }
 
     async findTuitsByUser(userId: string): Promise<Tuit[]> {
-        // TODO ask how to manage setting user if functinos are async
-        const tMongoModel = await TuitModel
-            .find({postedBy: userId})
-            .populate('postedBy').exec();
-        // because asynchronous, mapping cannot set userID even though database has it
-        const tModels = tMongoModel.map((tMongoModel) => {
-            const indivT = new Tuit(tMongoModel.tuit, tMongoModel.postedOn);
-            indivT.setUserId(userId);
-            return indivT;
-        });
-        return await tModels;
+
+        // get target user, hopefully they exist
+        const userTarget = await UserModel.findById(userId)
+
+        const allTuitsByUser = await TuitModel.find({postedBy: userTarget._id})
+
+        const allTuitsArray = allTuitsByUser.map(eachTuit => new Tuit(
+                eachTuit._id.toString(),
+                eachTuit.postedBy._id.toString(),
+                eachTuit['tuit'],
+                eachTuit['postedOn']
+            )
+        );
+
+        allTuitsArray.forEach(indivTuit => indivTuit.setUser(
+            new User(
+                userTarget._id.toString() || '',
+                userTarget['username'] || '',
+                userTarget['firstName'] || '',
+                userTarget['lastName'] || '',
+                userTarget['password'] || '',
+                userTarget['email'] || '')
+            )
+        );
+
+        return allTuitsArray;
     }
 }

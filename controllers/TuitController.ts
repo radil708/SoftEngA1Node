@@ -19,7 +19,7 @@ export default class TuitController implements TuitControllerI {
         this.app.get('/tuits', this.findAllTuits);
         this.app.get('/tuits/:tid', this.findTuitById)
         this.app.get('/users/:uid/tuits', this.findTuitsByUser)
-        this.app.post('/tuits',this.createTuit);
+        this.app.post('/users/:uid/tuits',this.createTuit);
         this.app.delete('/tuits/:tid', this.deleteTuit)
         this.app.put('/tuits/:tid', this.updateTuit)
 
@@ -28,24 +28,27 @@ export default class TuitController implements TuitControllerI {
 
 
     createTuit = async (req: Request, res: Response) => {
-        // my assumption is that the request body will have
-        // {userId: userObjectIdVal}
-        // so I will just get the userID from that object
 
-        const userId = req.body.postedBy
+        const userId = req.params.uid;
+        //TODO what if user does not exist?
 
-        const actualTuit = new Tuit(req.body.tuit, req.body.postedOn);
-        actualTuit.setUserId(userId)
+        const clientTuit = new Tuit(
+           '',
+            userId.toString(),
+            req.body.tuit,
+            req.body.postedOn
+        )
 
-        // TODO ask this doesn't set the author for when posting to databsae, how to fix?
-        //await actualTuit.setAuthor(new User(userThatPostedTuit,'','','',''));
-        const tuitData = await this.tuitDao.createTuit(actualTuit);
-        res.json(tuitData);
+        const tuitFromDb = await this.tuitDao.createTuit(clientTuit);
+
+        res.send(tuitFromDb)
 
     }
 
-    deleteTuit =  (req: Request, res: Response) => {
-        this.tuitDao.deleteTuit(req.params.tid).then(status => res.json(status));
+    deleteTuit = async (req: Request, res: Response) => {
+        const tuitIdTarget = req.params.tid;
+        const count = await this.tuitDao.deleteTuit(tuitIdTarget);
+        res.send(count)
     }
 
     findAllTuits = async (req: Request, res: Response) => {
@@ -54,18 +57,29 @@ export default class TuitController implements TuitControllerI {
     }
 
     findTuitById = async (req: Request, res: Response) => {
-        const tuitCurrent = await this.tuitDao.findTuitById(req.params.tid);
-        res.json(tuitCurrent);
+        const tuitIdTarget = req.params.tid;
+        const targetTuit = await this.tuitDao.findTuitById(tuitIdTarget);
+        res.json(targetTuit);
 
     }
 
-    updateTuit = (req: Request, res: Response) => {
-        this.tuitDao.updateTuit(req.params.tid, req.body)
-            .then(status => res.json(status));
+    updateTuit = async (req: Request, res: Response) => {
+        const tuitIdTarget = req.params.tid;
+
+        const tuitToUpdate = await this.tuitDao.findTuitById(tuitIdTarget);
+
+        const req_content = req.body.tuit;
+
+        // update the content of the tuit
+        tuitToUpdate.setContent(req_content);
+
+        const updateResp = await this.tuitDao.updateTuit(tuitIdTarget, tuitToUpdate)
+
+        res.send(updateResp);
     }
 
     findTuitsByUser = (req: Request, res: Response) => {
-        console.log(req.params.uid)
+
         this.tuitDao.findTuitsByUser(req.params.uid)
             .then(tuits => res.json(tuits));
     }
