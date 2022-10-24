@@ -3,41 +3,63 @@ import User from "./User";
 this class represent a tuit/tweet. It uses the User class as an attribute.
  */
 export default class Tuit {
-    private tuitID: string = '',
-    private user
+    private tuitID: string = '';
+    private userId: string = '';
     private tuitContent: string = '';
     private postedOn: Date = new Date();
     private postedBy: User | null;
-    private userObjectId: string = '';
 
-    constructor(contentIn : string, postedOnIn: Date, userIDIn: string) {
-        this.tuit = contentIn;
+
+    constructor(tuitIdIn: string, userIdIn: string, contentIn : string, postedOnIn: Date) {
+        this.tuitID = tuitIdIn;
+        this.userId = userIdIn;
+        this.tuitContent = contentIn;
         this.postedOn = postedOnIn;
         this.postedBy = null;
-        this.userObjectId = userIDIn;
     }
 
-    setAuthor(user: User | null): void {
-        this.postedBy = user;
+    getTuitId(): string {
+        return this.tuitID;
     }
+
+    getUserId(): string {
+        return this.userId;
+    }
+
+    getContent() : string {
+        return this.tuitContent;
+    }
+
+    setUser(userIn: User): void {
+        this.postedBy = new User(
+            userIn.getUserId(),
+            userIn.getUserName(),
+            userIn.getFirstName(),
+            userIn.getLastName(),
+            userIn.getPassword(),
+            userIn.getEmail())
+    }
+
+    getUser(): User | null {
+        return this.postedBy
+    }
+
+    setContent(contentIn: string): void {
+        this.tuitContent = contentIn;
+    }
+
+
 
     getDate(): Date {
         return this.postedOn;
     }
 
-    setUserId(userId : string): void {
-        this.userObjectId = userId;
-    }
 
-    post() : string {
-        return this.tuit;
-    }
+
+
 
     getUserID(): string {
-        return this.userObjectId;
+        return this.userId;
     }
 
-    setPostedBy(userIn : User) {
-        this.postedBy = userIn;
-    }
 }
