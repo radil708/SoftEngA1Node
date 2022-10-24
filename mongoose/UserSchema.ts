@@ -3,11 +3,10 @@ import MaritalStatus from "../models/MaritalStatus";
 import AccountType from "../models/AccountType";
 import Location from "../models/Location";
 
-/*
-This is the schema for users. i.e. defines how a table/collection will
-look like. In otherwords what each document in a collection will have for key values.
-Name of the table the schema defines is the name of the collection in the
-database. In this case 'Users'
+/**
+ * This is the UsersSchema. This will match the format of every entry
+ * in the 'Tuits' collection from the database and has default values
+ * set where necessary
  */
 const UserSchema = new mongoose.Schema({
     username: {type: String, required: true},

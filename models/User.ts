@@ -47,14 +47,24 @@ export default class User {
         this.email = emailIn;
     }
 
-    getUserId(): string {
+
+    /**
+     * Returns the userId attribute of the object as a {string}
+     */
+    public getUserId(): string {
         return this.userId;
     }
 
+    /**
+     * Returns the objects userName attribute as a {string}
+     */
     getUserName(): string {
         return this.username;
     }
 
+    /**
+     * Returns the objects firstName attribute as a {string}
+     */
     getFirstName(): string {
         let retVal = '';
         if (this.firstName != null) {
@@ -63,14 +73,23 @@ export default class User {
         return retVal;
     }
 
+    /**
+     * Returns the objects password attribute as a {string}
+     */
     getPassword(): string {
         return this.password;
     }
 
+    /**
+     * Returns the objects email attribute as a {string}
+     */
     getEmail(): string {
         return this.email;
     }
 
+    /**
+     * Returns the objects lastName attribute as a {string}
+     */
     getLastName(): string {
         let retVal = '';
         if (this.lastName != null) {

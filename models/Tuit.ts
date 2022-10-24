@@ -44,6 +44,11 @@ export default class Tuit {
         return this.postedBy
     }
 
+    /**
+     * This method will be used to update or set the tuitContent attribute
+     * of the Tuit object instant
+     * @param contentIn {string} will replace the current tuitContent attribute
+     */
     setContent(contentIn: string): void {
         this.tuitContent = contentIn;
     }

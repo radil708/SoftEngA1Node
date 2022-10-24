@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
 
+
+/**
+ * This is the TuitSchema. This will match the format of every entry
+ * in the 'Tuits' collection from the database
+ */
 const TuitSchema = new mongoose.Schema({
     tuit: {type: String, required: true},
     postedOn: Date,

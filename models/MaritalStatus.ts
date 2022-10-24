@@ -1,9 +1,7 @@
-/*
-Typscript
-This is an enumeration representing the marital status of a User. It is an
-attribute of the User class.
+/**
+ * This is an enum for Marital status. It is used in the User class as one
+ * of its attributes
  */
-
 enum MaritalStatus {
     Married = "MARRIED",
     Single = "SINGLE",
