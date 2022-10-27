@@ -22,16 +22,15 @@ export default class TuitDao implements TuitDaoI {
             )
         );
 
-        //TODO ask should I add user attribute even if we already have user ID
-
         return allTuitsArray;
     }
 
     async createTuit(tuitIn: Tuit): Promise<Tuit> {
+        //can remove
         const userFromDb = await userModel.findById(tuitIn.getUserID());
 
         const tuitJSON = await TuitModel.create({tuit: tuitIn.getContent(),
-                postedOn: tuitIn.getDate(), postedBy: userFromDb});
+                postedOn: tuitIn.getDate(), postedBy: tuitIn.getUserID()});
 
         const tuitResponse = new Tuit(
             tuitJSON._id.toString(),
@@ -40,6 +39,7 @@ export default class TuitDao implements TuitDaoI {
             tuitJSON.postedOn
         );
 
+            // can remove
         const userT = new User(
             userFromDb._id.toString() || '',
             userFromDb['username'] || '',

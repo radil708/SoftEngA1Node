@@ -40,6 +40,7 @@ export default class UserDao implements UserDaoI {
         const userFromDb = await UserModel.findById(uid);
 
         // TODO maybe obscure password here?
+        //TODO I can replace password with an empty string
         return new User(
             userFromDb._id.toString(),
             userFromDb['username'],

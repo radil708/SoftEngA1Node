@@ -39,6 +39,7 @@ export default class TuitController implements TuitControllerI {
             req.body.postedOn
         )
 
+        //pass in userId as well
         const tuitFromDb = await this.tuitDao.createTuit(clientTuit);
 
         res.send(tuitFromDb)
